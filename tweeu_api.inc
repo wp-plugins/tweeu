@@ -6,33 +6,28 @@ class TweetlyUpdater {
     public $twitterSource = "tweetlyupdater";
     public $twitterApiUrl = "http://twitter.com";
     public $debug = false;
+
+    private $twitterConsumerKey = "00TO3XpnbRJ6fACtSAgaSw";
+    private $twitterConsumerSecret = "Slgabh8s9ebgRjRIfQ0lh29fNwsN9BANdi8aIjs4";
+    private $twitterConnection;
     
-    private $twittereUser;
-    private $twitterPassword;
-    
-    function __construct($twittereUser, $twitterPassword) {
-        $this->twittereUser = $twittereUser;
-        $this->twitterPassword = $twitterPassword;
+    function __construct($twitterKey, $twitterSecret) {
+        $this->twitterConnection = new TwitterOAuth($this->twitterConsumerKey, $this->twitterConsumerSecret, $twitterKey, $twitterSecret);
     }
 
     public function twitterVerifyCredentials() {
-        $twResp = $this->curlGet($this->twitterApiUrl . "/account/verify_credentials.json",  $this->twittereUser, $this->twitterPassword);
-        $twObject = json_decode($twResp);
+        $twObject = $this->twitterConnection->get("account/verify_credentials");
         if ($twObject->{'name'}) {
                 return true;
         } else {
-                error_log("Twitter auth failed: " . $twResp);    
+                error_log("Twitter auth failed: " . $twObject->{'error'});
         }
         return false;
     }
     
     public function twitterUpdate($message) {
         //error_log("Sending twitter update");
-        $fields = array(    
-            'status'=>urlencode($message),
-            'source'=>$this->twitterSource
-        );
-        $twObject = json_decode($this->curlPost($this->twitterApiUrl ."/statuses/update.json", $fields, $this->twittereUser, $this->twitterPassword));  
+        $twObject =$this->twitterConnection->post('statuses/update', array('status' => $message));
         if ($twObject->{'id'} != null) {
             return  $twObject->{'id'} ;
         } else {
@@ -42,18 +37,33 @@ class TweetlyUpdater {
     }
     
     public function getBuhUrl($longurl) {
-	$shortUrl = $longurl;
+        $shortUrl = $longurl;
             $buhResp = $this->curlURL($this->buhApiUrl . "/api.php?url=" . $longurl);
             if ($buhResp != '') {
-                $shortUrl = $buhResp;       
+                $shortUrl = $buhResp;
             } else {
-                error_log("buh.bz shorten request failed");                
+                error_log("buh.bz shorten request failed");
             }
-    
-        return $shortUrl;
+
+	return $shortUrl;
     }
 
-   private function curlGet($url, $user, $password) {
+    private function curlURL($url) {
+        if ($this->debug) {
+                error_log("curlGet with url: " . $url);
+        }
+	$ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        if ($this->debug) {
+                error_log("curl GET response: " . $data);
+        }
+	curl_close($ch);
+        return $data;
+    }
+
+    private function curlGet($url, $user, $password) {
         if ($this->debug) {
                 error_log("curlGet with url: " . $url);
         }
@@ -66,21 +76,6 @@ class TweetlyUpdater {
             curl_setopt($ch, CURLOPT_USERPWD, $user . ":" . $password);
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
         }
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        if ($this->debug) {
-                error_log("curl GET response: " . $data);
-        }
-        curl_close($ch);                 
-        return $data;
-    }
-
-    private function curlURL($url) {
-        if ($this->debug) {
-                error_log("curlGet with url: " . $url);
-        }
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $data = curl_exec($ch);
         if ($this->debug) {

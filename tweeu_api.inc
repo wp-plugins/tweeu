@@ -1,5 +1,7 @@
 <?php
 
+require_once('config.php');
+
 class TweetlyUpdater {
 
     public $buhApiUrl = "http://buh.bz";
@@ -7,8 +9,8 @@ class TweetlyUpdater {
     public $twitterApiUrl = "http://twitter.com";
     public $debug = false;
 
-    private $twitterConsumerKey = "00TO3XpnbRJ6fACtSAgaSw";
-    private $twitterConsumerSecret = "Slgabh8s9ebgRjRIfQ0lh29fNwsN9BANdi8aIjs4";
+    private $twitterConsumerKey = CONSUMER_KEY;
+    private $twitterConsumerSecret = CONSUMER_SECRET;
     private $twitterConnection;
     
     function __construct($twitterKey, $twitterSecret) {

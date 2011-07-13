@@ -1,7 +1,7 @@
 <?php
 /*
  Plugin Name: TweeU
- Plugin URI: http://www.robertalks.com/tweeu/
+ Plugin URI: http://tweeu.robertalks.com/
  Description: Updates Twitter when you create or edit a blog entry, uses buh.bz for short urls
  Version: 1.2
  Author: Robert Gabriel <robert@linux-source.org>
@@ -9,6 +9,7 @@
  */
 
 /*
+ Copyright 2011  Robert Gabriel  (email : robert@linux-source.org)
  Copyright 2008  Michael Zehrer  (email : zehrer@zepan.net)
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:

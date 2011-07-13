@@ -1,9 +1,9 @@
 === TweeU ===
 Contributors: robertalks
-Donate link: http://www.robertalks.com/tweeu/
+Donate link: http://tweeu.robertalks.com/
 Tags: twitter, buh.bz, posting, url, shortening
-Requires at least: 3.0.5
-Tested up to: 3.0.5
+Requires at least: 3.2
+Tested up to: 3.2
 Stable tag: 1.2
 
 This plugin sends Twitter updates on new or edited posts, uses buh.bz.

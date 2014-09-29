@@ -5,7 +5,7 @@
  * A single location to store configuration.
  */
 
-define('CONSUMER_KEY', 'yiy3aQt4GJnkZFqxh8eOQ');
-define('CONSUMER_SECRET', '0NY67l23GJinc0x374Inkw0AvSUZNzGBdaY6xEbFJcI');
+define('CONSUMER_KEY', 'xvvei6nzQ9pwiFm7IJTmir3dq');
+define('CONSUMER_SECRET', 'zbXssgVoJevjjrA9HGpFvTQC22vV1tEdfVnN2QehTXMzrJ0JLi');
 
 ?>

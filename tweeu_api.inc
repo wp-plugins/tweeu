@@ -2,10 +2,10 @@
 
 require_once('config.php');
 
-class TweetlyUpdater {
+class Tweeupdater {
 
     public $buhApiUrl = "http://buh.bz";
-    public $twitterSource = "tweetlyupdater";
+    public $twitterSource = "Tweeu";
     public $twitterApiUrl = "http://twitter.com";
     public $debug = false;
 

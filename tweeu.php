@@ -3,13 +3,13 @@
  Plugin Name: TweeU
  Plugin URI: http://tweeu.robertalks.com/
  Description: Updates Twitter when you create or edit a blog entry, uses buh.bz for short urls
- Version: 1.2
+ Version: 1.3
  Author: Robert Gabriel <robert@linux-source.org>
  Author URI: http://www.robertalks.com/
  */
 
 /*
- Copyright 2011  Robert Gabriel  (email : robert@linux-source.org)
+ Copyright 2011-2014  Robert Gabriel  (email : robert@linux-source.org)
  Copyright 2008  Michael Zehrer  (email : zehrer@zepan.net)
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -47,9 +47,9 @@ function triggerTweet($post_ID, $isedit = false) {
     $thisposttitle = $thisPost->post_title;
     $thispostlink = get_permalink($post_ID);
 
-    $tweetlyUpdater = new TweetlyUpdater(get_option('tweetlyUpdater_oauthToken'), get_option('tweetlyUpdater_oauthTokenSecret'));
+    $Tweeu = new Tweeupdater(get_option('Tweeu_oauthToken'), get_option('Tweeu_oauthTokenSecret'));
 
-    if (!$tweetlyUpdater->twitterVerifyCredentials()) {
+    if (!$Tweeu->twitterVerifyCredentials()) {
         error_log("Twitter login failed");
         add_action('admin_notices', showAdminMessage("Twitter login failed, the update for this post was not successful.", true));
         return $post_ID;
@@ -68,20 +68,20 @@ function triggerTweet($post_ID, $isedit = false) {
     error_log("Post type: " . $thisPost->post_type);
     if ($isedit) {
         error_log("This is an update");
-        if (get_option('tweetlyUpdater_oldpost-edited-update') == '1') {
-            error_log("tweetlyUpdater_oldpost-edited-skippages: " . get_option('tweetlyUpdater_oldpost-edited-skippages'));
-            if ($thisPost->post_type == "page" and  get_option('tweetlyUpdater_oldpost-edited-skippages') == '1') {
+        if (get_option('Tweeu_oldpost-edited-update') == '1') {
+            error_log("Tweeu_oldpost-edited-skippages: " . get_option('Tweeu_oldpost-edited-skippages'));
+            if ($thisPost->post_type == "page" and  get_option('Tweeu_oldpost-edited-skippages') == '1') {
                 return $post_ID;
             }
 
-            $titleTemplate = get_option('tweetlyUpdater_oldpost-edited-text');
+            $titleTemplate = get_option('Tweeu_oldpost-edited-text');
             if (strlen(trim($thisposttitle)) == 0) {
                 $post = get_post($post_ID);
                 if ($post) {
                     $thisposttitle = $post->post_title;
                 }
             }
-            if (get_option('tweetlyUpdater_oldpost-edited-showlink') == '1') {
+            if (get_option('Tweeu_oldpost-edited-showlink') == '1') {
                 $buildlink = true;
             }
         } else {
@@ -89,14 +89,14 @@ function triggerTweet($post_ID, $isedit = false) {
         }
     } else {
         error_log("This is a new post");
-        error_log("tweetlyUpdater_newpost-published-skippages: " . get_option('tweetlyUpdater_newpost-published-skippages'));
-        if ($thisPost->post_type == "page" and  get_option('tweetlyUpdater_newpost-published-skippages') == '1') {
+        error_log("Tweeu_newpost-published-skippages: " . get_option('Tweeu_newpost-published-skippages'));
+        if ($thisPost->post_type == "page" and  get_option('Tweeu_newpost-published-skippages') == '1') {
             return $post_ID;
         }
 
-        if (get_option('tweetlyUpdater_newpost-published-update') == '1') {
-            $titleTemplate = get_option('tweetlyUpdater_newpost-published-text');
-            if (get_option('tweetlyUpdater_newpost-published-showlink') == '1') {
+        if (get_option('Tweeu_newpost-published-update') == '1') {
+            $titleTemplate = get_option('Tweeu_newpost-published-text');
+            if (get_option('Tweeu_newpost-published-showlink') == '1') {
                 $buildlink = true;
             }
         } else {
@@ -107,13 +107,13 @@ function triggerTweet($post_ID, $isedit = false) {
 
     $shortlink = null;
     if ($buildlink) {
-        $shortlink = $tweetlyUpdater->getBuhUrl($thispostlink);
+        $shortlink = $Tweeu->getBuhUrl($thispostlink);
     }
 
     $hashtags = null;
-    if (get_option('tweetlyUpdater_usehashtags') == '1') {
+    if (get_option('Tweeu_usehashtags') == '1') {
 
-        if (get_option('tweetlyUpdater_usehashtags-cats') == '1') {
+        if (get_option('Tweeu_usehashtags-cats') == '1') {
             $categories = get_the_category($post->ID);
             if ($categories) {
                 foreach ($categories as $cat) {
@@ -122,7 +122,7 @@ function triggerTweet($post_ID, $isedit = false) {
             }
         }
 
-        if (get_option('tweetlyUpdater_usehashtags-tags') == '1') {
+        if (get_option('Tweeu_usehashtags-tags') == '1') {
             $tags = get_the_tags($post->ID);
             if ($tags) {
                 foreach ($tags as $tag) {
@@ -131,8 +131,8 @@ function triggerTweet($post_ID, $isedit = false) {
             }
         }
 
-        if (get_option('tweetlyUpdater_usehashtags-static')) {
-            $hashtags .= ' ' . get_option('tweetlyUpdater_usehashtags-static');
+        if (get_option('Tweeu_usehashtags-static')) {
+            $hashtags .= ' ' . get_option('Tweeu_usehashtags-static');
         }
 
         $hashtags = prepare_text($hashtags);
@@ -141,12 +141,12 @@ function triggerTweet($post_ID, $isedit = false) {
 
     $status = buildTwitterStatus($titleTemplate, $thisposttitle, $category, $shortlink, trim($hashtags));
     if ($status) {
-        $res = $tweetlyUpdater->twitterUpdate($status);
+        $res = $Tweeu->twitterUpdate($status);
         if ($res == null) {
             error_log("Twitter update failed");
         } else {
             if ($buildlink) {
-                if (!add_post_meta($post_ID, "tweetlyUpdater_buhUrl", $shortlink, false))
+                if (!add_post_meta($post_ID, "Tweeu_buhUrl", $shortlink, false))
                     error_log("Could not add buh.bz url to meta data");
             }
         }
@@ -223,13 +223,13 @@ function prepare_text($input) {
 }
 
 
-function addTweetlyOptionsPage() {
+function addTweeuOptionsPage() {
     if (function_exists('add_options_page')) {
-        add_options_page('TweeU', 'TweeU', 8, __FILE__, 'showTweetlyOptionsPage');
+        add_options_page('TweeU', 'TweeU', 8, __FILE__, 'showTweeuOptionsPage');
     }
 }
 
-function showTweetlyOptionsPage() {
+function showTweeuOptionsPage() {
     include(dirname(__FILE__) . '/tweeu_options.php');
 }
 
@@ -250,5 +250,5 @@ add_action('pending_to_publish', 'triggerTweet', 10, 2);
 
 add_action('publish_to_publish', 'triggerEditTweet', 10, 1);
 
-add_action('admin_menu', 'addTweetlyOptionsPage');
+add_action('admin_menu', 'addTweeuOptionsPage');
 ?>

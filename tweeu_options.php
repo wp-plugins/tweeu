@@ -19,47 +19,47 @@ if (!function_exists('curl_exec')) {
     $prereqOK = false;
 }
 
-if (get_option('tweetlyUpdater_initialised') != '1') {
-    update_option('tweetlyUpdater_newpost-published-update', '1');
-    update_option('tweetlyUpdater_newpost-published-text', 'Published a new blog post: #title#');
-    update_option('tweetlyUpdater_newpost-published-showlink', '1');
-    update_option('tweetlyUpdater_newpost-published-skippages', '1');
+if (get_option('Tweeu_initialised') != '1') {
+    update_option('Tweeu_newpost-published-update', '1');
+    update_option('Tweeu_newpost-published-text', 'Published a new blog post: #title#');
+    update_option('Tweeu_newpost-published-showlink', '1');
+    update_option('Tweeu_newpost-published-skippages', '1');
 
-    update_option('tweetlyUpdater_oldpost-edited-update', '1');
-    update_option('tweetlyUpdater_oldpost-edited-text', 'Fiddling with my blog post: #title#');
-    update_option('tweetlyUpdater_oldpost-edited-showlink', '1');
-    update_option('tweetlyUpdater_oldpost-edited-skippages', '1');
+    update_option('Tweeu_oldpost-edited-update', '1');
+    update_option('Tweeu_oldpost-edited-text', 'Fiddling with my blog post: #title#');
+    update_option('Tweeu_oldpost-edited-showlink', '1');
+    update_option('Tweeu_oldpost-edited-skippages', '1');
 
-    update_option('tweetlyUpdater_usehashtags', '');
-    update_option('tweetlyUpdater_usehashtags-cats', '');
-    update_option('tweetlyUpdater_usehashtags-tags', '');
-    update_option('tweetlyUpdater_usehashtags-static', '');
+    update_option('Tweeu_usehashtags', '');
+    update_option('Tweeu_usehashtags-cats', '');
+    update_option('Tweeu_usehashtags-tags', '');
+    update_option('Tweeu_usehashtags-static', '');
 
-    update_option('tweetlyUpdater_initialised', '1');
+    update_option('Tweeu_initialised', '1');
 
 }
 
 if ($_POST['submit-type'] == 'options') {
-    update_option('tweetlyUpdater_newpost-published-update', $_POST['newpost-published-update']);
-    update_option('tweetlyUpdater_newpost-published-text', $_POST['newpost-published-text']);
-    update_option('tweetlyUpdater_newpost-published-showlink', $_POST['newpost-published-showlink']);
-    update_option('tweetlyUpdater_newpost-published-skippages', ($_POST['newpost-published-skippages'] == 1) ? 1 : 0);
+    update_option('Tweeu_newpost-published-update', $_POST['newpost-published-update']);
+    update_option('Tweeu_newpost-published-text', $_POST['newpost-published-text']);
+    update_option('Tweeu_newpost-published-showlink', $_POST['newpost-published-showlink']);
+    update_option('Tweeu_newpost-published-skippages', ($_POST['newpost-published-skippages'] == 1) ? 1 : 0);
 
-    update_option('tweetlyUpdater_oldpost-edited-update', $_POST['oldpost-edited-update']);
-    update_option('tweetlyUpdater_oldpost-edited-text', $_POST['oldpost-edited-text']);
-    update_option('tweetlyUpdater_oldpost-edited-showlink', $_POST['oldpost-edited-showlink']);
-    update_option('tweetlyUpdater_oldpost-edited-skippages', ($_POST['oldpost-edited-skippages'] == 1) ? 1 : 0);
+    update_option('Tweeu_oldpost-edited-update', $_POST['oldpost-edited-update']);
+    update_option('Tweeu_oldpost-edited-text', $_POST['oldpost-edited-text']);
+    update_option('Tweeu_oldpost-edited-showlink', $_POST['oldpost-edited-showlink']);
+    update_option('Tweeu_oldpost-edited-skippages', ($_POST['oldpost-edited-skippages'] == 1) ? 1 : 0);
 
-    update_option('tweetlyUpdater_usehashtags', $_POST['usehashtags']);
-    update_option('tweetlyUpdater_usehashtags-cats', $_POST['usehashtags-cats']);
-    update_option('tweetlyUpdater_usehashtags-tags', $_POST['usehashtags-tags']);
-    update_option('tweetlyUpdater_usehashtags-static', $_POST['usehashtags-static']);
+    update_option('Tweeu_usehashtags', $_POST['usehashtags']);
+    update_option('Tweeu_usehashtags-cats', $_POST['usehashtags-cats']);
+    update_option('Tweeu_usehashtags-tags', $_POST['usehashtags-tags']);
+    update_option('Tweeu_usehashtags-static', $_POST['usehashtags-static']);
 
     add_action('admin_notices', showAdminMessage("Post options saved.", false));
 }
 
-error_log("tweetlyUpdater_newpost-published-skippages: " . get_option('tweetlyUpdater_newpost-published-skippages'));
-error_log("tweetlyUpdater_oldpost-edited-skippages: " . get_option('tweetlyUpdater_oldpost-edited-skippages'));
+error_log("Tweeu_newpost-published-skippages: " . get_option('Tweeu_newpost-published-skippages'));
+error_log("Tweeu_oldpost-edited-skippages: " . get_option('Tweeu_oldpost-edited-skippages'));
 
 
 if (isset($_REQUEST['oauth_token']) && isset($_REQUEST['oauth_verifier'])) {
@@ -74,8 +74,8 @@ if (isset($_REQUEST['oauth_token']) && isset($_REQUEST['oauth_verifier'])) {
         /* Request access tokens from twitter */
         $token_credentials = $connection->getAccessToken($_REQUEST['oauth_verifier']);
 
-        update_option('tweetlyUpdater_oauthToken', $token_credentials['oauth_token']);
-        update_option('tweetlyUpdater_oauthTokenSecret', $token_credentials['oauth_token_secret']);
+        update_option('Tweeu_oauthToken', $token_credentials['oauth_token']);
+        update_option('Tweeu_oauthTokenSecret', $token_credentials['oauth_token_secret']);
 
         /* Remove no longer needed request tokens */
         unset($_SESSION['oauth_token']);
@@ -83,7 +83,7 @@ if (isset($_REQUEST['oauth_token']) && isset($_REQUEST['oauth_verifier'])) {
 
         /* If HTTP response is 200 continue otherwise send to connect page to retry */
         if (200 == $connection->http_code) {
-            add_action('admin_notices', showAdminMessage("TweeU is now connected to your Twitter account.", true));
+            add_action('admin_notices', showAdminMessage("Tweeu is now connected to your Twitter account.", true));
         } else {
             add_action('admin_notices', showAdminMessage("Could not bind to your twitter account, please try again!", true));
         }
@@ -109,20 +109,20 @@ function vc_checkCheckbox($theFieldname) {
 
 
 <div class="wrap">
-    <h2>Your TweeU options</h2>
+    <h2>Your Tweeu options</h2>
 
 <?php if ($prereqOK) { ?>
 
     <h3>Your Twitter account details</h3>
 
-<?php $tweetlyUpdater = new TweetlyUpdater(get_option('tweetlyUpdater_oauthToken'), get_option('tweetlyUpdater_oauthTokenSecret')); ?>
+<?php $Tweeu = new Tweeupdater(get_option('Tweeu_oauthToken'), get_option('Tweeu_oauthTokenSecret')); ?>
 
     <fieldset>
         <legend>Twitter login</legend>
         <form method="post">
             <div>
             <?php
-            if (!$tweetlyUpdater->twitterVerifyCredentials()) {
+            if (!$Tweeu->twitterVerifyCredentials()) {
                 add_action('admin_notices', showAdminMessage("You twitter login could not be verified!" . false));
                 $callBackUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?page=tweeu/tweeu.php');
                 ?>
@@ -140,7 +140,7 @@ function vc_checkCheckbox($theFieldname) {
                 <?php
 
             } else {
-                ?><p>TweeU is successfully connected to your Twitter account. Manage your application
+                ?><p>Tweeu is successfully connected to your Twitter account. Manage your application
                     connections <a href="http://twitter.com/settings/connections">here</a>.</p><?php
 
             }
@@ -165,23 +165,23 @@ function vc_checkCheckbox($theFieldname) {
                 <legend>New post published</legend>
                 <p>
                     <input type="checkbox" name="newpost-published-update" id="newpost-published-update"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_newpost-published-update')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_newpost-published-update')?> />
                     <label for="newpost-published-update">Update Twitter when the new post is published</label>
                 </p>
 
                 <p>
                     <label for="newpost-published-text">Text for this Twitter update</label><br/>
                     <input type="text" name="newpost-published-text" id="newpost-published-text" size="60"
-                           maxlength="146" value="<?php echo(get_option('tweetlyUpdater_newpost-published-text')) ?>"/>
+                           maxlength="146" value="<?php echo(get_option('Tweeu_newpost-published-text')) ?>"/>
                     &nbsp;&nbsp;
                     <input type="checkbox" name="newpost-published-showlink" id="newpost-published-showlink"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_newpost-published-showlink')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_newpost-published-showlink')?> />
                     <label for="newpost-published-showlink">Link title to blog?</label>
                 </p>
 
                 <p>
                     <input type="checkbox" name="newpost-published-skippages" id="newpost-published-skippages"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_newpost-published-skippages')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_newpost-published-skippages')?> />
                     <label for="newpost-published-skippages">Skip pages</label>
                 </p>
             </fieldset>
@@ -189,23 +189,23 @@ function vc_checkCheckbox($theFieldname) {
                 <legend>Existing posts</legend>
                 <p>
                     <input type="checkbox" name="oldpost-edited-update" id="oldpost-edited-update"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_oldpost-edited-update')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_oldpost-edited-update')?> />
                     <label for="oldpost-edited-update">Update Twitter when the an old post has been edited</label>
                 </p>
 
                 <p>
                     <label for="oldpost-edited-text">Text for this Twitter update</label><br/>
                     <input type="text" name="oldpost-edited-text" id="oldpost-edited-text" size="60" maxlength="146"
-                           value="<?php echo(get_option('tweetlyUpdater_oldpost-edited-text')) ?>"/>
+                           value="<?php echo(get_option('Tweeu_oldpost-edited-text')) ?>"/>
                     &nbsp;&nbsp;
                     <input type="checkbox" name="oldpost-edited-showlink" id="oldpost-edited-showlink"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_oldpost-edited-showlink')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_oldpost-edited-showlink')?> />
                     <label for="oldpost-edited-showlink">Link title to blog?</label>
                 </p>
 
                 <p>
                     <input type="checkbox" name="oldpost-edited-skippages" id="oldpost-edited-skippages"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_oldpost-edited-skippages')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_oldpost-edited-skippages')?> />
                     <label for="oldpost-edited-skippages">Skip pages</label>
                 </p>
             </fieldset>
@@ -213,24 +213,24 @@ function vc_checkCheckbox($theFieldname) {
                 <legend>Hashtags</legend>
                 <p>
                     <input type="checkbox" name="usehashtags" id="usehashtags"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_usehashtags')?> />
+                           value="1" <?php vc_checkCheckbox('Tweeu_usehashtags')?> />
                     <label for="usehashtags">Generate hashtags from the posts categories and/or tags</label>
                 </p>
 
                 <p>
                     <input type="checkbox" name="usehashtags-cats" id="usehashtags-cats"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_usehashtags-cats')?>" />
+                           value="1" <?php vc_checkCheckbox('Tweeu_usehashtags-cats')?>" />
                     <label for="usehashtags-cats">Use categories</label>
                     &nbsp;&nbsp;
                     <input type="checkbox" name="usehashtags-tags" id="usehashtags-tags"
-                           value="1" <?php vc_checkCheckbox('tweetlyUpdater_usehashtags-tags')?>" />
+                           value="1" <?php vc_checkCheckbox('Tweeu_usehashtags-tags')?>" />
                     <label for="usehashtags-tags">Use tags</label>
                 </p>
 
                 <p>
                     <label for="newpost-published-text">Add fixed hash tags(i.e. #foo #bar)</label><br/>
                     <input type="text" name="usehashtags-static" id="usehashtags-static" size="60"
-                           maxlength="146" value="<?php echo(get_option('tweetlyUpdater_usehashtags-static')) ?>"/>
+                           maxlength="146" value="<?php echo(get_option('Tweeu_usehashtags-static')) ?>"/>
                 </p>
             </fieldset>
             <input type="hidden" name="submit-type" value="options">

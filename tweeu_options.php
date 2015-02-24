@@ -3,7 +3,7 @@
 if (!class_exists('TwitterOAuth')) {
     require_once('twitteroauth/twitteroauth.php');
 }
-require_once('config.php');
+require_once('tweeu_config.php');
 
 $prereqOK = true;
 
@@ -128,7 +128,7 @@ function vc_checkCheckbox($theFieldname) {
                 ?>
                     <p>
                     <?php
-                    echo('<a href="' . WP_PLUGIN_URL . '/tweeu/redirect.php?callback=' . $callBackUrl . '">');
+                    echo('<a href="' . WP_PLUGIN_URL . '/tweeu/tweeu_redirect.php?callback=' . $callBackUrl . '">');
                     echo('<img src="' . WP_PLUGIN_URL . '/tweeu/images/lighter.png" alt="Sign in with Twitter"/>');
                     echo('</a>');
                     ?>

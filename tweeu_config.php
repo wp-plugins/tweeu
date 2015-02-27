@@ -1,12 +1,5 @@
 <?php
-
-/**
- * @file
- * A single location to store configuration.
- */
-
-define('CONSUMER_KEY', 'xvvei6nzQ9pwiFm7IJTmir3dq');
-define('CONSUMER_SECRET', 'zbXssgVoJevjjrA9HGpFvTQC22vV1tEdfVnN2QehTXMzrJ0JLi');
-define('BUH_KEY', '5d41402abc4b2a76b9719d911017c592');
-
+define('CONSUMER_KEY', 'JBwy53L01eBy0g4v3fHrkW2Z6');
+define('CONSUMER_SECRET', 'DKIkxpYUU48Bw3wO71EE8Zw4ixQbC6eOm3rwUynLViIdtGCZig');
+define('BUH_KEY', 'b1f4f9a523e36fd969f4573e25af4540');
 ?>

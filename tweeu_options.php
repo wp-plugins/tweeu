@@ -1,100 +1,91 @@
 <?php
 @session_start();
-if (!class_exists('TwitterOAuth')) {
-    require_once('twitteroauth/twitteroauth.php');
-}
+
+require 'twitteroauth/autoload.php';
+use Abraham\TwitterOAuth\TwitterOAuth;
+
 require_once('tweeu_config.php');
 
 $prereqOK = true;
 
 if (!function_exists('json_decode')) {
-    error_log("Function json_decode not found");
-    add_action('admin_notices', showAdminMessage('Your php installation doesn\'t support the <a href="http://us.php.net/json_decode">json_decode</a> functionality.', true));
-    $prereqOK = false;
+	add_action('admin_notices', showAdminMessage('Your php installation doesn\'t support the <a href="http://us.php.net/json_decode">json_decode</a> functionality.', true));
+	$prereqOK = false;
 }
 
 if (!function_exists('curl_exec')) {
-    error_log("Function curl_exec not found");
-    add_action('admin_notices', showAdminMessage('Your php installation doesn\'t include <a href="http://us.php.net/manual/en/ref.curl.php">curl</a> support.', true));
-    $prereqOK = false;
+	add_action('admin_notices', showAdminMessage('Your php installation doesn\'t include <a href="http://us.php.net/manual/en/ref.curl.php">curl</a> support.', true));
+	$prereqOK = false;
 }
 
 if (get_option('Tweeu_initialised') != '1') {
-    update_option('Tweeu_newpost-published-update', '1');
-    update_option('Tweeu_newpost-published-text', 'Published a new blog post: #title#');
-    update_option('Tweeu_newpost-published-showlink', '1');
-    update_option('Tweeu_newpost-published-skippages', '1');
+	update_option('Tweeu_newpost-published-update', '1');
+	update_option('Tweeu_newpost-published-text', 'Published a new blog post: #title#');
+	update_option('Tweeu_newpost-published-showlink', '1');
+	update_option('Tweeu_newpost-published-skippages', '1');
 
-    update_option('Tweeu_oldpost-edited-update', '1');
-    update_option('Tweeu_oldpost-edited-text', 'Fiddling with my blog post: #title#');
-    update_option('Tweeu_oldpost-edited-showlink', '1');
-    update_option('Tweeu_oldpost-edited-skippages', '1');
+	update_option('Tweeu_oldpost-edited-update', '1');
+	update_option('Tweeu_oldpost-edited-text', 'Fiddling with my blog post: #title#');
+	update_option('Tweeu_oldpost-edited-showlink', '1');
+	update_option('Tweeu_oldpost-edited-skippages', '1');
 
-    update_option('Tweeu_usehashtags', '');
-    update_option('Tweeu_usehashtags-cats', '');
-    update_option('Tweeu_usehashtags-tags', '');
-    update_option('Tweeu_usehashtags-static', '');
+	update_option('Tweeu_usehashtags', '');
+	update_option('Tweeu_usehashtags-cats', '');
+	update_option('Tweeu_usehashtags-tags', '');
+	update_option('Tweeu_usehashtags-static', '');
 
-    update_option('Tweeu_initialised', '1');
-
+	update_option('Tweeu_initialised', '1');
 }
 
 if ($_POST['submit-type'] == 'options') {
-    update_option('Tweeu_newpost-published-update', $_POST['newpost-published-update']);
-    update_option('Tweeu_newpost-published-text', $_POST['newpost-published-text']);
-    update_option('Tweeu_newpost-published-showlink', $_POST['newpost-published-showlink']);
-    update_option('Tweeu_newpost-published-skippages', ($_POST['newpost-published-skippages'] == 1) ? 1 : 0);
+	update_option('Tweeu_newpost-published-update', $_POST['newpost-published-update']);
+	update_option('Tweeu_newpost-published-text', $_POST['newpost-published-text']);
+	update_option('Tweeu_newpost-published-showlink', $_POST['newpost-published-showlink']);
+	update_option('Tweeu_newpost-published-skippages', ($_POST['newpost-published-skippages'] == 1) ? 1 : 0);
 
-    update_option('Tweeu_oldpost-edited-update', $_POST['oldpost-edited-update']);
-    update_option('Tweeu_oldpost-edited-text', $_POST['oldpost-edited-text']);
-    update_option('Tweeu_oldpost-edited-showlink', $_POST['oldpost-edited-showlink']);
-    update_option('Tweeu_oldpost-edited-skippages', ($_POST['oldpost-edited-skippages'] == 1) ? 1 : 0);
+	update_option('Tweeu_oldpost-edited-update', $_POST['oldpost-edited-update']);
+	update_option('Tweeu_oldpost-edited-text', $_POST['oldpost-edited-text']);
+	update_option('Tweeu_oldpost-edited-showlink', $_POST['oldpost-edited-showlink']);
+	update_option('Tweeu_oldpost-edited-skippages', ($_POST['oldpost-edited-skippages'] == 1) ? 1 : 0);
 
-    update_option('Tweeu_usehashtags', $_POST['usehashtags']);
-    update_option('Tweeu_usehashtags-cats', $_POST['usehashtags-cats']);
-    update_option('Tweeu_usehashtags-tags', $_POST['usehashtags-tags']);
-    update_option('Tweeu_usehashtags-static', $_POST['usehashtags-static']);
+	update_option('Tweeu_usehashtags', $_POST['usehashtags']);
+	update_option('Tweeu_usehashtags-cats', $_POST['usehashtags-cats']);
+	update_option('Tweeu_usehashtags-tags', $_POST['usehashtags-tags']);
+	update_option('Tweeu_usehashtags-static', $_POST['usehashtags-static']);
 
-    add_action('admin_notices', showAdminMessage("Post options saved.", false));
+	add_action('admin_notices', showAdminMessage("Post options saved.", false));
 }
 
-error_log("Tweeu_newpost-published-skippages: " . get_option('Tweeu_newpost-published-skippages'));
-error_log("Tweeu_oldpost-edited-skippages: " . get_option('Tweeu_oldpost-edited-skippages'));
-
-
 if (isset($_REQUEST['oauth_token']) && isset($_REQUEST['oauth_verifier'])) {
-    if ($_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
-        $_SESSION['oauth_status'] = 'oldtoken';
-        add_action('admin_notices', showAdminMessage("Could not bind to your twitter account, please try again!", true));
-    } else {
+	if ($_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
+		$_SESSION['oauth_status'] = 'oldtoken';
+		add_action('admin_notices', showAdminMessage("Could not bind to your twitter account, please try again!", true));
+	} else {
+		/* Create TwitteroAuth object with app key/secret and token key/secret from default phase */
+		$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
 
-        /* Create TwitteroAuth object with app key/secret and token key/secret from default phase */
-        $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
+		/* Request access tokens from twitter */
+		$token_credentials = $connection->oauth("oauth/access_token", array("oauth_verifier" => $_REQUEST['oauth_verifier']));
 
-        /* Request access tokens from twitter */
-        $token_credentials = $connection->getAccessToken($_REQUEST['oauth_verifier']);
+		if ($connection->getLastHttpCode() == 200) {
+			update_option('Tweeu_oauthToken', $token_credentials['oauth_token']);
+			update_option('Tweeu_oauthTokenSecret', $token_credentials['oauth_token_secret']);
 
-        update_option('Tweeu_oauthToken', $token_credentials['oauth_token']);
-        update_option('Tweeu_oauthTokenSecret', $token_credentials['oauth_token_secret']);
+			/* Remove no longer needed request tokens */
+			unset($_SESSION['oauth_token']);
+			unset($_SESSION['oauth_token_secret']);
 
-        /* Remove no longer needed request tokens */
-        unset($_SESSION['oauth_token']);
-        unset($_SESSION['oauth_token_secret']);
-
-        /* If HTTP response is 200 continue otherwise send to connect page to retry */
-        if (200 == $connection->http_code) {
-            add_action('admin_notices', showAdminMessage("Tweeu is now connected to your Twitter account.", true));
-        } else {
-            add_action('admin_notices', showAdminMessage("Could not bind to your twitter account, please try again!", true));
-        }
-
-    }
+			add_action('admin_notices', showAdminMessage("Tweeu is now connected to your Twitter account.", true));
+		} else {
+			add_action('admin_notices', showAdminMessage("Could not bind to your twitter account, please try again!", true));
+		}
+	}
 }
 
 function vc_checkCheckbox($theFieldname) {
-    if (get_option($theFieldname) == '1') {
-        echo('checked="true"');
-    }
+	if (get_option($theFieldname) == '1') {
+        	echo('checked="true"');
+	}
 }
 
 ?>
@@ -109,20 +100,20 @@ function vc_checkCheckbox($theFieldname) {
 
 
 <div class="wrap">
-    <h2>Your Tweeu options</h2>
+    <h2>Your TweeU options</h2>
 
 <?php if ($prereqOK) { ?>
 
     <h3>Your Twitter account details</h3>
 
-<?php $Tweeu = new Tweeupdater(get_option('Tweeu_oauthToken'), get_option('Tweeu_oauthTokenSecret')); ?>
+<?php $tweeu = new Tweeupdater(get_option('Tweeu_oauthToken'), get_option('Tweeu_oauthTokenSecret')); ?>
 
     <fieldset>
         <legend>Twitter login</legend>
         <form method="post">
             <div>
             <?php
-            if (!$Tweeu->twitterVerifyCredentials()) {
+            if (!$tweeu->twitterVerifyCredentials()) {
                 add_action('admin_notices', showAdminMessage("You twitter login could not be verified!" . false));
                 $callBackUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?page=tweeu/tweeu.php');
                 ?>

@@ -30,9 +30,20 @@ class Tweeupdater
 		if ($this->debug) {
 			error_log("tweeu: Twitter auth failed, HTTP response: " . $this->twitterConnection->getLastHttpCode());
 		}
+
 		return false;
 	}
-    
+
+	public function twitterScreenName()
+	{
+		$twObject = $this->twitterConnection->get("account/verify_credentials");
+		if ($this->twitterConnection->getLastHttpCode() == 200) {
+			return $twObject->name;
+		}
+
+		return null;
+	}
+
 	public function twitterUpdate($message)
 	{
 		$twObject = $this->twitterConnection->post('statuses/update', array('status' => $message));
@@ -43,6 +54,7 @@ class Tweeupdater
 		if ($this->debug) {
 			error_log("tweeu: Twitter update failed, HTTP response: " . $this->twitterConnection->getLastHttpCode());
 		}
+
 		return false;
 	}
     
@@ -56,7 +68,7 @@ class Tweeupdater
 		} 
 
 		if ($this->debug) {
-			error_log("tweeu: failed to short: " . $longurl);
+			error_log("tweeu: buh.bz failed to short: " . $longurl);
 		}
 
 		return $shortUrl;

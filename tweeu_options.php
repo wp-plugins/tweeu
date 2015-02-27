@@ -131,7 +131,7 @@ function vc_checkCheckbox($theFieldname) {
                 <?php
 
             } else {
-                ?><p>Tweeu is successfully connected to your Twitter account. Manage your application
+                ?><p>Hello <?php $name = $tweeu->twitterScreenName(); echo $name; ?>. Tweeu is successfully connected to your Twitter account. Manage your application
                     connections <a href="http://twitter.com/settings/connections">here</a>.</p><?php
 
             }

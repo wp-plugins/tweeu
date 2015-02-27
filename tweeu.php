@@ -3,7 +3,7 @@
  Plugin Name: TweeU
  Plugin URI: http://tweeu.robertalks.com/
  Description: Updates Twitter when you create or edit a blog entry, uses buh.bz for short urls
- Version: 1.7
+ Version: 1.7.1
  Author: Robert Milasan <robert@linux-source.org>
  Author URI: http://www.robertalks.com/
  */

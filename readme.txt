@@ -4,7 +4,7 @@ Donate link: http://tweeu.robertalks.com/
 Tags: twitter, buh.bz, posting, url, shortening
 Requires at least: 3.2
 Tested up to: 4.1
-Stable tag: 1.7
+Stable tag: 1.7.1
 
 This plugin sends Twitter updates on new or edited posts, uses buh.bz.
 
